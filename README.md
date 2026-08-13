@@ -64,9 +64,14 @@ than pointing you at the generic [`uniswap-v3`](https://github.com/nightswatchhq
 - **Big ints are exact text.** Use the `*_dec` DECIMAL companions for arithmetic. Never `SUM(amount0)`.
 - **Solidity bools are text.** `enabled` holds the strings `'true'` and `'false'`, not a SQL boolean.
   Compare with `enabled = 'true'`. See [nuthatch#539](https://github.com/nightswatchhq/nuthatch/issues/539).
-- **Prices are raw.** `price_token1_per_token0` is derived from `sqrtPriceX96` in raw token units.
-  Multiply by `10^(decimals0 - decimals1)` for a human price; token decimals need a contract call and
-  are deliberately not indexed here.
+- **Prices are raw, and marginal.** `price_token1_per_token0` is derived from `sqrtPriceX96` in raw
+  token units. Multiply by `10^(decimals0 - decimals1)` for a human price; token decimals need a
+  contract call and are deliberately not indexed here. It is also the **post-swap marginal** price,
+  not what the swap executed at: measured against the realised `amount1/amount0` ratio it differs by
+  0.16-1.0% on these pools, which is price impact plus fee, not an error.
+- **Signed amounts decode properly.** `amount0_dec` / `amount1_dec` are true signed decimals, so
+  `SUM` and subtraction behave. Verified: 320,949 and 329,860 of 650,815 swaps carry a negative
+  side respectively, one per swap.
 - **`from` and `to` are SQL keywords.** Double-quote them.
 
 ## Backfilling
