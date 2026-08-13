@@ -1,0 +1,431 @@
+# semantic.toml - what this nest's data *means* (RFC-0016). Read by the MCP `schema`
+# tool, the admin UI, and the scaffolded skill. Edit descriptions freely; the
+# `[table.*.footguns]` are DERIVED from the ABI and regenerated - leave them be.
+
+schema_version = 1
+
+[nest]
+description = """SquadSwap WOW v2 on BNB Smart Chain - a concentrated-liquidity DEX forked from PancakeSwap V3, itself a Uniswap V3 fork. Every pool is discovered at runtime from the factory's PoolCreated event, so there is no per-pool configuration anywhere in this nest.
+
+Two things differ from a vanilla Uniswap V3 nest and are worth knowing before you query. Swap carries two extra parameters, protocolFeesToken0 and protocolFeesToken1, which vanilla V3 does not emit. And a separate PoolManager contract can override a pool's fee independently of the tier it was created with, so the fee a pool charges is not necessarily the fee in its PoolCreated row - use the pool_effective_fee view rather than factory__pool_created.fee.
+
+Amounts: use the *_dec DECIMAL companions for arithmetic. The bare uint256/int256 columns are exact text and must never be summed. Token symbols and decimals need a contract call and are deliberately not indexed; join a vendored token list for human labels.
+
+Ported from the live subgraph deployment QmQTCx7o6NW9SdJuyQSCYz71YLm3K43dkmtjZ38hbqvwPL; every ABI here is vendored from that deployment's own pinned IPFS CIDs rather than re-resolved."""
+
+[table.factory__fee_amount_enabled]
+description = "`FeeAmountEnabled(uint24,int24)` events emitted by the `factory` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per FeeAmountEnabled(uint24,int24) event"
+
+[table.factory__fee_amount_enabled.columns]
+fee = "The `fee` uint24 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+tickSpacing = "The `tickSpacing` int24 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.factory__fee_amount_extra_info_updated]
+description = "`FeeAmountExtraInfoUpdated(uint24,bool,bool)` events emitted by the `factory` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per FeeAmountExtraInfoUpdated(uint24,bool,bool) event"
+
+[table.factory__fee_amount_extra_info_updated.columns]
+enabled = "The `enabled` bool parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+fee = "The `fee` uint24 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+whitelistRequested = "The `whitelistRequested` bool parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.factory__owner_changed]
+description = "`OwnerChanged(address,address)` events emitted by the `factory` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per OwnerChanged(address,address) event"
+
+[table.factory__owner_changed.columns]
+newOwner = "The `newOwner` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+oldOwner = "The `oldOwner` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.factory__pool_created]
+description = "`PoolCreated(address,address,uint24,int24,address)` events emitted by the `factory` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per PoolCreated(address,address,uint24,int24,address) event"
+
+[table.factory__pool_created.columns]
+fee = "The `fee` uint24 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+pool = "The `pool` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+tickSpacing = "The `tickSpacing` int24 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+token0 = "The `token0` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+token1 = "The `token1` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.factory__set_lm_pool_deployer]
+description = "`SetLmPoolDeployer(address)` events emitted by the `factory` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per SetLmPoolDeployer(address) event"
+
+[table.factory__set_lm_pool_deployer.columns]
+lmPoolDeployer = "The `lmPoolDeployer` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.factory__white_list_added]
+description = "`WhiteListAdded(address,bool)` events emitted by the `factory` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per WhiteListAdded(address,bool) event"
+
+[table.factory__white_list_added.columns]
+user = "The `user` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+verified = "The `verified` bool parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.factory__white_list_added.footguns]
+reserved_words = ["user"]
+
+[table.pool__burn]
+description = "`Burn(address,int24,int24,uint128,uint256,uint256)` events emitted by the `pool` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per Burn(address,int24,int24,uint128,uint256,uint256) event"
+
+[table.pool__burn.columns]
+amount = "The `amount` uint128 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+amount0 = "The `amount0` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+amount1 = "The `amount1` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+owner = "The `owner` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+tickLower = "The `tickLower` int24 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+tickUpper = "The `tickUpper` int24 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.pool__burn.footguns]
+big_ints = [
+    "amount",
+    "amount0",
+    "amount1",
+]
+overflows_dec = [
+    "amount0",
+    "amount1",
+]
+
+[table.pool__collect]
+description = "`Collect(address,address,int24,int24,uint128,uint128)` events emitted by the `pool` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per Collect(address,address,int24,int24,uint128,uint128) event"
+
+[table.pool__collect.columns]
+amount0 = "The `amount0` uint128 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+amount1 = "The `amount1` uint128 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+owner = "The `owner` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+recipient = "The `recipient` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+tickLower = "The `tickLower` int24 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+tickUpper = "The `tickUpper` int24 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.pool__collect.footguns]
+big_ints = [
+    "amount0",
+    "amount1",
+]
+
+[table.pool__collect_protocol]
+description = "`CollectProtocol(address,address,uint128,uint128)` events emitted by the `pool` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per CollectProtocol(address,address,uint128,uint128) event"
+
+[table.pool__collect_protocol.columns]
+amount0 = "The `amount0` uint128 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+amount1 = "The `amount1` uint128 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+recipient = "The `recipient` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+sender = "The `sender` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.pool__collect_protocol.footguns]
+big_ints = [
+    "amount0",
+    "amount1",
+]
+
+[table.pool__flash]
+description = "`Flash(address,address,uint256,uint256,uint256,uint256)` events emitted by the `pool` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per Flash(address,address,uint256,uint256,uint256,uint256) event"
+
+[table.pool__flash.columns]
+amount0 = "The `amount0` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+amount1 = "The `amount1` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+paid0 = "The `paid0` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+paid1 = "The `paid1` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+recipient = "The `recipient` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+sender = "The `sender` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.pool__flash.footguns]
+big_ints = [
+    "amount0",
+    "amount1",
+    "paid0",
+    "paid1",
+]
+overflows_dec = [
+    "amount0",
+    "amount1",
+    "paid0",
+    "paid1",
+]
+
+[table.pool__increase_observation_cardinality_next]
+description = "`IncreaseObservationCardinalityNext(uint16,uint16)` events emitted by the `pool` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per IncreaseObservationCardinalityNext(uint16,uint16) event"
+
+[table.pool__increase_observation_cardinality_next.columns]
+observationCardinalityNextNew = "The `observationCardinalityNextNew` uint16 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+observationCardinalityNextOld = "The `observationCardinalityNextOld` uint16 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.pool__initialize]
+description = "`Initialize(uint160,int24)` events emitted by the `pool` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per Initialize(uint160,int24) event"
+
+[table.pool__initialize.columns]
+sqrtPriceX96 = "The `sqrtPriceX96` uint160 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+tick = "The `tick` int24 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.pool__initialize.footguns]
+big_ints = ["sqrtPriceX96"]
+overflows_dec = ["sqrtPriceX96"]
+
+[table.pool__mint]
+description = "`Mint(address,address,int24,int24,uint128,uint256,uint256)` events emitted by the `pool` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per Mint(address,address,int24,int24,uint128,uint256,uint256) event"
+
+[table.pool__mint.columns]
+amount = "The `amount` uint128 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+amount0 = "The `amount0` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+amount1 = "The `amount1` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+owner = "The `owner` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+sender = "The `sender` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+tickLower = "The `tickLower` int24 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+tickUpper = "The `tickUpper` int24 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.pool__mint.footguns]
+big_ints = [
+    "amount",
+    "amount0",
+    "amount1",
+]
+overflows_dec = [
+    "amount0",
+    "amount1",
+]
+
+[table.pool__set_fee_protocol]
+description = "`SetFeeProtocol(uint32,uint32,uint32,uint32)` events emitted by the `pool` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per SetFeeProtocol(uint32,uint32,uint32,uint32) event"
+
+[table.pool__set_fee_protocol.columns]
+feeProtocol0New = "The `feeProtocol0New` uint32 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+feeProtocol0Old = "The `feeProtocol0Old` uint32 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+feeProtocol1New = "The `feeProtocol1New` uint32 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+feeProtocol1Old = "The `feeProtocol1Old` uint32 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.pool__set_lm_pool_event]
+description = "`SetLmPoolEvent(address)` events emitted by the `pool` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per SetLmPoolEvent(address) event"
+
+[table.pool__set_lm_pool_event.columns]
+addr = "The `addr` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.pool__swap]
+description = "`Swap(address,address,int256,int256,uint160,uint128,int24,uint128,uint128)` events emitted by the `pool` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per Swap(address,address,int256,int256,uint160,uint128,int24,uint128,uint128) event"
+
+[table.pool__swap.columns]
+amount0 = "The `amount0` int256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+amount1 = "The `amount1` int256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+liquidity = "The `liquidity` uint128 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+protocolFeesToken0 = "The `protocolFeesToken0` uint128 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+protocolFeesToken1 = "The `protocolFeesToken1` uint128 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+recipient = "The `recipient` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+sender = "The `sender` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+sqrtPriceX96 = "The `sqrtPriceX96` uint160 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+tick = "The `tick` int24 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.pool__swap.footguns]
+big_ints = [
+    "amount0",
+    "amount1",
+    "sqrtPriceX96",
+    "liquidity",
+    "protocolFeesToken0",
+    "protocolFeesToken1",
+]
+overflows_dec = [
+    "amount0",
+    "amount1",
+    "sqrtPriceX96",
+]
+
+[table.pool_manager__ownership_transferred]
+description = "`OwnershipTransferred(address,address)` events emitted by the `pool_manager` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per OwnershipTransferred(address,address) event"
+
+[table.pool_manager__ownership_transferred.columns]
+newOwner = "The `newOwner` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+previousOwner = "The `previousOwner` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.pool_manager__set_custom_fee]
+description = "`SetCustomFee(address,uint24)` events emitted by the `pool_manager` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per SetCustomFee(address,uint24) event"
+
+[table.pool_manager__set_custom_fee.columns]
+fee = "The `fee` uint24 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+pool = "The `pool` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.pool_manager__set_default_fee]
+description = "`SetDefaultFee(uint24)` events emitted by the `pool_manager` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per SetDefaultFee(uint24) event"
+
+[table.pool_manager__set_default_fee.columns]
+fee = "The `fee` uint24 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.pool_manager__set_operator]
+description = "`SetOperator(address)` events emitted by the `pool_manager` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per SetOperator(address) event"
+
+[table.pool_manager__set_operator.columns]
+operator = "The `operator` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.pool_manager__toggle_custom_fee]
+description = "`ToggleCustomFee(address,bool)` events emitted by the `pool_manager` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per ToggleCustomFee(address,bool) event"
+
+[table.pool_manager__toggle_custom_fee.columns]
+enabled = "The `enabled` bool parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+pool = "The `pool` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.position_manager__approval]
+description = "`Approval(address,address,uint256)` events emitted by the `position_manager` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per Approval(address,address,uint256) event"
+
+[table.position_manager__approval.columns]
+approved = "The `approved` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+owner = "The `owner` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+tokenId = "The `tokenId` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.position_manager__approval.footguns]
+big_ints = ["tokenId"]
+overflows_dec = ["tokenId"]
+
+[table.position_manager__approval_for_all]
+description = "`ApprovalForAll(address,address,bool)` events emitted by the `position_manager` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per ApprovalForAll(address,address,bool) event"
+
+[table.position_manager__approval_for_all.columns]
+approved = "The `approved` bool parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+operator = "The `operator` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+owner = "The `owner` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.position_manager__collect]
+description = "`Collect(uint256,address,uint256,uint256)` events emitted by the `position_manager` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per Collect(uint256,address,uint256,uint256) event"
+
+[table.position_manager__collect.columns]
+amount0 = "The `amount0` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+amount1 = "The `amount1` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+recipient = "The `recipient` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+tokenId = "The `tokenId` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.position_manager__collect.footguns]
+big_ints = [
+    "tokenId",
+    "amount0",
+    "amount1",
+]
+overflows_dec = [
+    "tokenId",
+    "amount0",
+    "amount1",
+]
+
+[table.position_manager__decrease_liquidity]
+description = "`DecreaseLiquidity(uint256,uint128,uint256,uint256)` events emitted by the `position_manager` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per DecreaseLiquidity(uint256,uint128,uint256,uint256) event"
+
+[table.position_manager__decrease_liquidity.columns]
+amount0 = "The `amount0` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+amount1 = "The `amount1` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+liquidity = "The `liquidity` uint128 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+tokenId = "The `tokenId` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.position_manager__decrease_liquidity.footguns]
+big_ints = [
+    "tokenId",
+    "liquidity",
+    "amount0",
+    "amount1",
+]
+overflows_dec = [
+    "tokenId",
+    "amount0",
+    "amount1",
+]
+
+[table.position_manager__increase_liquidity]
+description = "`IncreaseLiquidity(uint256,uint128,uint256,uint256)` events emitted by the `position_manager` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per IncreaseLiquidity(uint256,uint128,uint256,uint256) event"
+
+[table.position_manager__increase_liquidity.columns]
+amount0 = "The `amount0` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+amount1 = "The `amount1` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+liquidity = "The `liquidity` uint128 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+tokenId = "The `tokenId` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.position_manager__increase_liquidity.footguns]
+big_ints = [
+    "tokenId",
+    "liquidity",
+    "amount0",
+    "amount1",
+]
+overflows_dec = [
+    "tokenId",
+    "amount0",
+    "amount1",
+]
+
+[table.position_manager__transfer]
+description = "`Transfer(address,address,uint256)` events emitted by the `position_manager` contract. (seeded from the ABI - edit semantic.toml to improve this)"
+grain = "one row per Transfer(address,address,uint256) event"
+
+[table.position_manager__transfer.columns]
+from = "The `from` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+to = "The `to` address parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+tokenId = "The `tokenId` uint256 parameter. (seeded from the ABI - edit semantic.toml to improve this)"
+
+[table.position_manager__transfer.footguns]
+reserved_words = [
+    "from",
+    "to",
+]
+big_ints = ["tokenId"]
+overflows_dec = ["tokenId"]
+
+[view]
+
+# Authored views (views/*.sql) are described here so the MCP/`/schema` can render them:
+# [view.your_view_name]
+# description = "What this derivation computes."
+
+# ── authored views (views/*.sql) ─────────────────────────────────────────────
+
+[view.pools]
+description = "The pool registry - one row per pool the factory has ever created, with its token pair, launch fee tier and tick spacing. The spine the rest of the views hang off."
+grain = "one row per pool ever created"
+
+[view.pool_custom_fee_current]
+description = "The current state of SquadSwap's per-pool fee override: the latest SetCustomFee per pool, paired with the latest ToggleCustomFee. A pool with a custom fee set but override_enabled = false is charging its launch fee, not the override."
+grain = "one row per pool that has ever had a custom fee set"
+
+[view.pool_effective_fee]
+description = "The fee each pool is actually charging: the override where one is set and enabled, otherwise the launch tier. Use this for anything fee-weighted - reading factory__pool_created.fee alone silently ignores the override layer."
+grain = "one row per pool"
+
+[view.swaps]
+description = "Every swap across every discovered pool, joined to its pair and the fee actually in force. price_token1_per_token0 is derived from sqrtPriceX96 and is in RAW token units - multiply by 10^(decimals0-decimals1) for a human price."
+grain = "one row per Swap event"
+
+[view.liquidity_events]
+description = "Mints and burns as one stream with a `kind` discriminator. Burn amounts are reported positive by the contract; a burn is a removal by virtue of its kind, not by carrying a negative number."
+grain = "one row per Mint or Burn event"
+
+[view.tokens]
+description = "Every token appearing in any pool, ranked by pool count - a rough centrality measure that floats the quote assets to the top."
+grain = "one row per distinct token address"
+
+[view.position_owners]
+description = "Current owner of each position NFT, taken as the latest Transfer for that tokenId. A mint appears as a transfer from the zero address, a burn as one to it."
+grain = "one row per position NFT"
+
+[view.position_liquidity]
+description = "Net liquidity per position: everything added minus everything removed. A position at zero has been fully withdrawn but its NFT may still exist and still be owned."
+grain = "one row per position NFT that has ever had liquidity"
+
+[view.pool_activity]
+description = "Per-pool activity summary, ordered by swap count. The first place to look when asking which pools actually matter, since a factory-discovered registry always has a long tail of pools created once and never used."
+grain = "one row per pool"

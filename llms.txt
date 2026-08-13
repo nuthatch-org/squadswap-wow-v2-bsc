@@ -1,0 +1,50 @@
+# nuthatch nest on bsc
+
+A self-hosted blockchain index. Query it locally; there is no third-party API.
+
+## Contracts
+- `factory` = 0x10d8612D9D8269e322AB551C18a307cB4D6BC07B
+- `pool_manager` = 0x391Eaa90f931C6330132efe6c73EBDf77d782eF5
+- `position_manager` = 0x501535ef0B92eE1df5C12f47720f1E479b1Db7b4
+
+## Tables (one per contract event)
+- `factory__fee_amount_enabled` - FeeAmountEnabled(uint24,int24) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, fee, tickSpacing)
+- `factory__fee_amount_extra_info_updated` - FeeAmountExtraInfoUpdated(uint24,bool,bool) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, fee, whitelistRequested, enabled)
+- `factory__owner_changed` - OwnerChanged(address,address) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, oldOwner, newOwner)
+- `factory__pool_created` - PoolCreated(address,address,uint24,int24,address) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, token0, token1, fee, tickSpacing, pool)
+- `factory__set_lm_pool_deployer` - SetLmPoolDeployer(address) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, lmPoolDeployer)
+- `factory__white_list_added` - WhiteListAdded(address,bool) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, user, verified)
+- `pool__burn` - Burn(address,int24,int24,uint128,uint256,uint256) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, owner, tickLower, tickUpper, amount, amount0, amount1)
+- `pool__collect` - Collect(address,address,int24,int24,uint128,uint128) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, owner, recipient, tickLower, tickUpper, amount0, amount1)
+- `pool__collect_protocol` - CollectProtocol(address,address,uint128,uint128) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, sender, recipient, amount0, amount1)
+- `pool__flash` - Flash(address,address,uint256,uint256,uint256,uint256) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, sender, recipient, amount0, amount1, paid0, paid1)
+- `pool__increase_observation_cardinality_next` - IncreaseObservationCardinalityNext(uint16,uint16) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, observationCardinalityNextOld, observationCardinalityNextNew)
+- `pool__initialize` - Initialize(uint160,int24) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, sqrtPriceX96, tick)
+- `pool__mint` - Mint(address,address,int24,int24,uint128,uint256,uint256) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, sender, owner, tickLower, tickUpper, amount, amount0, amount1)
+- `pool__set_fee_protocol` - SetFeeProtocol(uint32,uint32,uint32,uint32) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, feeProtocol0Old, feeProtocol1Old, feeProtocol0New, feeProtocol1New)
+- `pool__set_lm_pool_event` - SetLmPoolEvent(address) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, addr)
+- `pool__swap` - Swap(address,address,int256,int256,uint160,uint128,int24,uint128,uint128) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, sender, recipient, amount0, amount1, sqrtPriceX96, liquidity, tick, protocolFeesToken0, protocolFeesToken1)
+- `pool_manager__ownership_transferred` - OwnershipTransferred(address,address) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, previousOwner, newOwner)
+- `pool_manager__set_custom_fee` - SetCustomFee(address,uint24) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, pool, fee)
+- `pool_manager__set_default_fee` - SetDefaultFee(uint24) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, fee)
+- `pool_manager__set_operator` - SetOperator(address) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, operator)
+- `pool_manager__toggle_custom_fee` - ToggleCustomFee(address,bool) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, pool, enabled)
+- `position_manager__approval` - Approval(address,address,uint256) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, owner, approved, tokenId)
+- `position_manager__approval_for_all` - ApprovalForAll(address,address,bool) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, owner, operator, approved)
+- `position_manager__collect` - Collect(uint256,address,uint256,uint256) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, tokenId, recipient, amount0, amount1)
+- `position_manager__decrease_liquidity` - DecreaseLiquidity(uint256,uint128,uint256,uint256) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, tokenId, liquidity, amount0, amount1)
+- `position_manager__increase_liquidity` - IncreaseLiquidity(uint256,uint128,uint256,uint256) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, tokenId, liquidity, amount0, amount1)
+- `position_manager__transfer` - Transfer(address,address,uint256) (block_number, block_hash, block_timestamp, tx_hash, log_index, address, _seq, from, to, tokenId)
+
+## Live HTTP API (run `nuthatch dev`)
+- `GET /`                    index status
+- `GET /tables`              every table with its columns
+- `GET /table/{name}?limit=N` recent rows of one table (hot + sealed)
+- `GET /entity/{id}`         one row by id (`{block:012}-{logindex:06}`)
+- `GET /sql?q=SELECT...`     read-only SQL; each table is a view named `{alias}__{event}`
+- `GET /balances?limit=N`    top holder balances (when an ERC-20 Transfer table is present)
+- `GET /balance/{address}`   one address's derived balance
+
+## MCP (for coding agents)
+Run `nuthatch mcp` (stdio) to expose tools: status, schema, tables, table, sql, entity,
+balance, top_balances. Fully offline against the local instance; nothing phones home.

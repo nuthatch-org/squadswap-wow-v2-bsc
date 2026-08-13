@@ -1,0 +1,38 @@
+[nest]
+name = "squadswap-wow-v2-bsc"
+chain = "bsc"
+chain_id = 56
+rpc_urls = [
+    "https://bsc-rpc.publicnode.com",
+    "https://bsc-dataseed.binance.org",
+]
+schema_version = 1
+
+[[contracts]]
+alias = "factory"
+address = "0x10d8612D9D8269e322AB551C18a307cB4D6BC07B"
+start_block = 46190543
+abi = "abis/factory.json"
+
+[[contracts]]
+alias = "pool_manager"
+address = "0x391Eaa90f931C6330132efe6c73EBDf77d782eF5"
+start_block = 46190551
+abi = "abis/poolmanager.json"
+
+[[contracts]]
+alias = "position_manager"
+address = "0x501535ef0B92eE1df5C12f47720f1E479b1Db7b4"
+start_block = 46190624
+abi = "abis/position-manager.json"
+
+[[templates]]
+name = "pool"
+abi = "abis/pool.json"
+
+[[factories]]
+watch = "factory"
+event = "PoolCreated"
+child_param = "pool"
+template = "pool"
+start = 46190543
