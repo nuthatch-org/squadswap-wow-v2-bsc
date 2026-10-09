@@ -1,13 +1,13 @@
 # squadswap-wow-v2-bsc
 
-A [nuthatch](https://github.com/nightswatchhq/nuthatch) nest for **SquadSwap WOW v2** on BNB Smart
+A [nuthatch](https://github.com/nuthatch-org/nuthatch) nest for **SquadSwap WOW v2** on BNB Smart
 Chain — a concentrated-liquidity DEX forked from PancakeSwap V3, itself a Uniswap V3 fork.
 
 Every pool is discovered at runtime from the factory's `PoolCreated` event. There is no per-pool
 configuration anywhere in this nest, and none is ever needed.
 
 ```sh
-nuthatch init --from https://github.com/nightswatchhq/squadswap-wow-v2-bsc
+nuthatch init --from https://github.com/nuthatch-org/squadswap-wow-v2-bsc
 cd squadswap-wow-v2-bsc
 nuthatch dev --rpc https://your-bsc-archive-endpoint
 nuthatch sql "SELECT * FROM pool_activity LIMIT 10"
@@ -57,13 +57,13 @@ WHERE override_enabled;
 
 A pool with a custom fee set but the toggle off is charging its launch fee. Reading the fee and
 ignoring the toggle is the obvious way to get this wrong, and it is why this nest exists rather
-than pointing you at the generic [`uniswap-v3`](https://github.com/nightswatchhq/uniswap-v3) nest.
+than pointing you at the generic [`uniswap-v3`](https://github.com/nuthatch-org/uniswap-v3) nest.
 
 ## Footguns
 
 - **Big ints are exact text.** Use the `*_dec` DECIMAL companions for arithmetic. Never `SUM(amount0)`.
 - **Solidity bools are text.** `enabled` holds the strings `'true'` and `'false'`, not a SQL boolean.
-  Compare with `enabled = 'true'`. See [nuthatch#539](https://github.com/nightswatchhq/nuthatch/issues/539).
+  Compare with `enabled = 'true'`. See [nuthatch#539](https://github.com/nuthatch-org/nuthatch/issues/539).
 - **Prices are raw, and marginal.** `price_token1_per_token0` is derived from `sqrtPriceX96` in raw
   token units. Multiply by `10^(decimals0 - decimals1)` for a human price; token decimals need a
   contract call and are deliberately not indexed here. It is also the **post-swap marginal** price,
@@ -106,7 +106,7 @@ differences rather than counts so they stay valid as the nest indexes more histo
 
 ## Provenance
 
-Built by [The Night's Watch](https://discord.gg/CQewvyJ69Y) from the live subgraph deployment, after
+Built by [Nuthatch](https://discord.gg/CQewvyJ69Y) from the live subgraph deployment, after
 a support thread about the subgraph's query reliability. The nest is not a replacement for that
 subgraph on the decentralised network — it is a local copy you hold, with no retention window but
 your own.
